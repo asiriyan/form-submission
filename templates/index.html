@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — Saved to Google Sheets</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="card-header">
+        <h1>Get in touch</h1>
+        <p>Fill in the form and your details are stored straight into our Google Sheet.</p>
+        <div class="status {{ 'ok' if sheets_configured else 'warn' }}">
+          <span class="dot"></span>
+          {% if sheets_configured %}
+            Delivering to Google Sheet: <strong>{{ sheet_name }}</strong>
+          {% else %}
+            Demo mode — submissions save to <strong>submissions.csv</strong> until Google credentials are added
+          {% endif %}
+        </div>
+        <p class="demo-note">Live demo: please don't enter real personal details. Submissions are visible in the public results sheet.</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form id="form" method="POST" action="{{ url_for('submit') }}" novalidate>
+        <div class="grid">
+          <div class="field">
+            <label for="name">Full name *</label>
+            <input type="text" id="name" name="name" placeholder="Abebe Kebede"
+                   value="{{ values.get('name', '') }}" class="{{ 'invalid' if errors.get('name') }}" required />
+            {% if errors.get('name') %}<span class="error">{{ errors['name'] }}</span>{% endif %}
+          </div>
+
+          <div class="field">
+            <label for="email">Email address *</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com"
+                   value="{{ values.get('email', '') }}" class="{{ 'invalid' if errors.get('email') }}" required />
+            {% if errors.get('email') %}<span class="error">{{ errors['email'] }}</span>{% endif %}
+          </div>
+
+          <div class="field">
+            <label for="phone">Phone number *</label>
+            <input type="tel" id="phone" name="phone" placeholder="+251 91 234 5678"
+                   value="{{ values.get('phone', '') }}" class="{{ 'invalid' if errors.get('phone') }}" required />
+            {% if errors.get('phone') %}<span class="error">{{ errors['phone'] }}</span>{% endif %}
+          </div>
+
+          <div class="field">
+            <label for="address">Address *</label>
+            <input type="text" id="address" name="address" placeholder="Bole, Addis Ababa"
+                   value="{{ values.get('address', '') }}" class="{{ 'invalid' if errors.get('address') }}" required />
+            {% if errors.get('address') %}<span class="error">{{ errors['address'] }}</span>{% endif %}
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="message">Your message *</label>
+          <textarea id="message" name="message" rows="4" placeholder="How can we help you?"
+                    class="{{ 'invalid' if errors.get('message') }}" required>{{ values.get('message', '') }}</textarea>
+          {% if errors.get('message') %}<span class="error">{{ errors['message'] }}</span>{% endif %}
+        </div>
+
+        <button type="submit">Send message</button>
+
+        {% if sheets_configured and sheet_url %}
+          <a class="results-link" href="{{ sheet_url }}" target="_blank" rel="noopener noreferrer">
+            View live results in Google Sheets ↗
+          </a>
+        {% endif %}
+
+        <p class="hint">Your submission is stored with a UTC timestamp along with every field above.</p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

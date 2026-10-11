@@ -1,0 +1,5 @@
+credentials.json
+submissions.csv
+.env
+.venv/
+__pycache__/
